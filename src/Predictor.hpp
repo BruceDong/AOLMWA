@@ -8,13 +8,15 @@ class Predictor{
 private:
 	Model * pModel;
 private:
-	static const int maxLen = 256;
+	static const int maxLen = 128;
 public:
         std::vector<int> vFeaID;
 public:
 	Predictor(Model * pm);
-	double predict(const Sentence & sen, int senID, std::vector<int> & fa);
+
 	double predict(const Sentence & sen, std::vector<int> & fa);
+	double predict(const Sentence & sen, int senID, std::vector<int> & fa);
+
 private:
 	bool _buildGraph(const Sentence & sen, int senID,
 			std::vector<std::vector<double> > & graph);

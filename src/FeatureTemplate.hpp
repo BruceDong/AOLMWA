@@ -5,10 +5,13 @@
 #include <string>
 #include <map>
 #include <string>
+//#include <ext/hash_map>
 
 #include "Sentence.hpp"
 
 using namespace std;
+//using namespace __gnu_cxx;
+
 
 class FeatureTemplate{
 
@@ -17,6 +20,7 @@ private:
 	const Sentence * pSen;
 	int p, c;
 	std::map<int,std::vector<std::string> > mSF;
+	//std::vector<std::vector<std::string> > mSF;
 
 public:
 
