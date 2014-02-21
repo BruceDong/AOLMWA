@@ -1,12 +1,25 @@
+/*****************************************************************/
 Multi-domain data set from the task three in the COAE 2011
 
-As the largest Chinese set for evaluating the performance of ASA models, it consists of opinion sentences in product reviews, blogs, and micro-blogs from finance, entertainment, and digital domains. The distribution is as follows:
+As the largest Chinese date set for evaluating the performance of 
+ASA (Aspect-based Sentiment Analysis) models, it consists of 
+opinion sentences in product reviews, blogs, and micro-blogs from 
+finance, entertainment, and digital domains. The distribution is
+as follows:
 
 Domains		 Training sets		 Testing sets
+
 Finance   	 130         		 33
 Entertainment	 288	     		 73
 Digital		 1,725	  		 434
 
+/******************************************************************/
+
+/******************************************************************/
 Rules for dependency parsing
 
-These rules are contructed manually based on POS. In a row, the numbers denotes the order of dependencies between words, and chars denotes the POS. For example, "-1 0	n a" denotes that "n" govern "a".
+These rules are contructed manually based on POS. In a row, 
+the numbers denote the order of dependencies between words, 
+and the chars denote the POS. For example, "-1 0	n a" denotes 
+that "n" governs "a".
+/******************************************************************/
