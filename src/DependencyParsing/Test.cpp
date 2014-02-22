@@ -17,13 +17,13 @@ void testWordAgentInit()
 void testEvaluation()
 {
         DependencyPaser dp;
-        dp.evaluate("./result/result.conll","./result/evaluate.conll");
+        dp.evaluate("../result/result.conll","../result/evaluate.conll");
 }
 
 void testParsing()
 {
         DependencyPaser dp;
 
-        dp.parsing("./data/DataSetForDependencyParsing/train-1000","./data/DataSetForDependencyParsing/test-300","./result/result.conll","./result/evaluate.conll");
+        dp.parsing("../data/DataSetForDependencyParsing/train-1000","../data/DataSetForDependencyParsing/test-300","../result/result.conll","../result/evaluate.conll");
 
 }
