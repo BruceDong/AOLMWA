@@ -16,4 +16,11 @@ increamence(i) = (mutationIncreamence*2.0*i)/(nb*(nb + 1.0));
 
 where nb is the number of bits in a receptor. And it subjects to that mutationIncreamence is the sum of increamence(i);
 
+If the affinity is zero,
+
+increamence(i) = (deta*2.0*i)/(nb*(nb + 1.0));
+
+where deta is a fixed increamence.
+
+
 
