@@ -4,9 +4,7 @@
 /************************************** Simulator **************************************/
 
 #define LEARNTIMES	        200	        /*times of learning*/
-#define BETA		        0.01	        /*mutation increment*/
-#define DETA		        0.0000001	/*mutation factor*/
-#define MUTATEPRO   	        0.1	        /*Mutated probability*/
+#define MUTATEPRO   	        0.001	        /*Mutated probability*/
 #define PRECISION	        100000000	/*3 points after 0: 0.000*/
 #define ACCURACYTHRESHOLD       0.96            /*threshold for mutated accuracy*/
 #define TIMETHRESHOLD           10              /*time threshold for terminating immune responses to control

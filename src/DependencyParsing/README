@@ -1,1 +1,19 @@
-With the codes, the model can process dependency parsing on sentences.
+1.Modify the mutation threshold (mp)
+
+f(mp)=exp(-affinity)*mp;
+
+Generating mp automatically
+
+2.Modify mutation of receptors of word agents.
+
+If the affinity is not zero, 
+
+mutationIncreamence = exp(-affinity)*affinity;
+
+and the ith bit in the receptor is increased as follows:
+
+increamence(i) = (mutationIncreamence*2.0*i)/(nb*(nb + 1.0));
+
+where nb is the number of bits in a receptor. And it subjects to that mutationIncreamence is the sum of increamence(i);
+
+
