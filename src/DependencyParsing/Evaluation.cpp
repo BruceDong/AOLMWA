@@ -33,6 +33,11 @@ double Evaluation::calAccuracy(const vector<int> & newLabel,
 	return accuracy / (double)(newLabel.size() - 1);
 }
 
+void Evaluation::getValueDiff(double value, double mutateValue, double & diff)
+{
+	diff = mutateValue - value;
+}
+
 
 pair<int, double>  Evaluation::calFeedback(const Sentence & sen, WordAgent * wa,
                 const vector<int> & standard)
@@ -40,7 +45,7 @@ pair<int, double>  Evaluation::calFeedback(const Sentence & sen, WordAgent * wa,
 	vector<double> tmp = pModel->getFeatureWeight();
 	vector<int> father;
 	father.resize(standard.size());
-	double value = pPredictor->predict(sen,father);
+	double v = pPredictor->predict(sen,father);
 	double accuracy = calAccuracy(father, standard);
 
 	map<int, double> tmpDomFeature = wa->getTmpReceptor();
@@ -49,12 +54,12 @@ pair<int, double>  Evaluation::calFeedback(const Sentence & sen, WordAgent * wa,
 
 	vector<int> mutatefather;
 	mutatefather.resize(standard.size());
-	double mutatevalue = pPredictor->predict(sen,mutatefather);
+	double mv = pPredictor->predict(sen,mutatefather);
 	double mutateaccuracy = calAccuracy(mutatefather, standard);
-
+	double diff = 0.0;
+	getValueDiff(v,mv,diff);
 
 	int differ_acc = int((mutateaccuracy - accuracy) * PRECISION);
-
 	pModel->setFeatureWeight(tmp);
 
 	pair<int,double> p;
@@ -79,7 +84,6 @@ double Evaluation::evalute(Sentence & sen, int senID,std::vector<int> & standard
 {
         vector<int> father;
         father.resize(standard.size());
-	double value = pPredictor->predict(sen,father);
 	double accuracy = calAccuracy(father, standard);
 	vector<double> fw = pModel->getFeatureWeight();
 	return accuracy;

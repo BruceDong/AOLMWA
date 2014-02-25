@@ -161,7 +161,7 @@ bool WordAgent::_mutate()
 		    /*producting mutated probability*/
 		    int r = rand()%1000;
 		    mutatedProb = (double)r/1e6;
-		    double mp = exp(-agAffinity)*MUTATEPRO;
+		    double mp = exp(-agAffinity*1e6)*MUTATEPRO;
 
 		    if(mutatedProb < mp )
 		    {
@@ -172,17 +172,14 @@ bool WordAgent::_mutate()
 		if((int)mutatePosition.size() > 0)
 		{
 		        double sum = 0.0;
-			double deta = 1e-1;
-
-			/*calculating mutation increamence*/
-			double mutateIncreamence = exp(-agAffinity)*agAffinity;
-			double numOfMutationPosition = (double)mutatePosition.size();
+			int r = rand()%1000000;
+			double deta = (double)r/1e-7;
 
 			if(agAffinity == 0.0)
 			{
 				for(size_t j = 0; j < mutatePosition.size();j++)
 				{
-					tmpFeature[mutatePosition[j]] = (deta*2.0*mutatePosition[j])/(numOfMutationPosition*(numOfMutationPosition + 1.0));
+					tmpFeature[mutatePosition[j]] = deta;
 					sum += deta;
 				}
 			}
@@ -190,9 +187,9 @@ bool WordAgent::_mutate()
 			{
 				for(size_t j = 0; j < mutatePosition.size(); j++)
 				{
-					deta = (2.0*(double)mutatePosition[j]*mutateIncreamence)/(numOfMutationPosition*(numOfMutationPosition + 1.0));
 					if(domFeature[mutatePosition[j]] != 0.0)
 					{
+						deta = domFeature[mutatePosition[j]]/agAffinity;
 						tmpFeature[mutatePosition[j]] = domFeature[mutatePosition[j]] + deta;
 						sum += deta;
 					}

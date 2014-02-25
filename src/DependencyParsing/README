@@ -1,26 +1,12 @@
-1.Modify the mutation threshold (mp)
+1.Modify mutation of receptors of word agents.
 
-f(mp)=exp(-affinity)*mp;
+Mutation based on rate of bit weigts
 
-Generating mp automatically
+If the current affinity is 0 or ith weight w(i) is 0, then deta is assigned randomly.
 
-2.Modify mutation of receptors of word agents.
+If the current affinity is not 0 and ith weight w(i) is not 0, then
 
-If the affinity is not zero, 
-
-mutationIncreamence = exp(-affinity)*affinity;
-
-and the ith bit in the receptor is increased as follows:
-
-increamence(i) = (mutationIncreamence*2.0*i)/(nb*(nb + 1.0));
-
-where nb is the number of bits in a receptor. And it subjects to that mutationIncreamence is the sum of increamence(i);
-
-If the affinity is zero,
-
-increamence(i) = (deta*2.0*i)/(nb*(nb + 1.0));
-
-where deta is a fixed increamence.
-
+deta = w(i)/affinity;
+w(i) = w(i) + deta;
 
 

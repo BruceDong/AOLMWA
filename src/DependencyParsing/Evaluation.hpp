@@ -20,6 +20,7 @@ public:
 	~Evaluation();
 
         void   printLine();
+	void   getValueDiff(double value, double mutateValue, double & diff);
 	double calAccuracy(const std::vector<int> & newLabel,
 			const std::vector<int> & orgLabel);
 	double evalute(Sentence & sen, int senID,std::vector<int> & standard);

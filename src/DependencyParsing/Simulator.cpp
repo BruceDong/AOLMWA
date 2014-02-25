@@ -65,6 +65,7 @@ bool Simulator::addWordAgent(WordAgent & pWordAgent)
 
                bool f = vWordAgents[_calcSub(pWordAgent.getPosition())].insert(map<int,WordAgent>::value_type(agentId,pWordAgent)).second;
 
+		return f;
         }
 	return true;
 }
