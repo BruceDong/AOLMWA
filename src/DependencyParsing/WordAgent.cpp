@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "Parameter.hpp"
+
 #include "WordAgent.hpp"
 
 using namespace std;
@@ -111,10 +112,12 @@ bool WordAgent::_doMove()
 	static const int dy[] = {1, 1, 0, -1, -1, -1, 0, 1};
 	int min = simu->agentCount(position);
 	vector<pair<int, int> > pos;
+	vector<pair<int, int> > neighborPos;
 	for(int k = 0; k < 8; k++){
 		int x = position.first + dx[k];
 		int y = position.second + dy[k];
 		pair<int, int> newPos = make_pair(x, y);
+		neighborPos.push_back(newPos);
 		if(env->xInRange(x) && env->yInRange(y)){
 			if(simu->agentCount(newPos) < min){
 				min = simu->agentCount(newPos);
@@ -127,12 +130,18 @@ bool WordAgent::_doMove()
 	}
 
 	orders.push(INTERACTING);
+	pair<int, int> oldPos = position;
 	if(min == simu->agentCount(position)){
+		int p = rand()%neighborPos.size();
+		position = neightborPos[p];
 
-		return false;
+		simu->addWordAgent(*this);
+		position = oldPos;
+		simu->deleteWordAgent(*this);
+
+		return true;
 	}
 
-        pair<int, int> oldPos = position;
 	int p = rand() % pos.size();
 	position = pos[p];
 
