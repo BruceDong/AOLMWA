@@ -117,8 +117,8 @@ bool WordAgent::_doMove()
 		int x = position.first + dx[k];
 		int y = position.second + dy[k];
 		pair<int, int> newPos = make_pair(x, y);
-		neighborPos.push_back(newPos);
 		if(env->xInRange(x) && env->yInRange(y)){
+			neighborPos.push_back(newPos);
 			if(simu->agentCount(newPos) < min){
 				min = simu->agentCount(newPos);
 				pos.clear();
@@ -133,8 +133,7 @@ bool WordAgent::_doMove()
 	pair<int, int> oldPos = position;
 	if(min == simu->agentCount(position)){
 		int p = rand()%neighborPos.size();
-		position = neightborPos[p];
-
+		position = neighborPos[p];
 		simu->addWordAgent(*this);
 		position = oldPos;
 		simu->deleteWordAgent(*this);
