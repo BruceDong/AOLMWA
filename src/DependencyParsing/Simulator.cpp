@@ -113,6 +113,31 @@ bool Simulator::interact(WordAgent & wa)
 
                                 it++;
                         }
+                        else if((it->second.getCategory()==ANTIBODY) && (it->second.getStatus() == ACTIVE))
+                        {
+                                int matchSize = 0;
+                                vector<int> ag = it->second.getRecReceptor();
+                                double affinity = wa.calAffinity(ag,matchSize);
+                                if((matchSize > 0) && (matchSize == (int)ag.size()))
+                                {
+                                        /*set status*/
+                                        wa.setStatus(MATCH);
+                                        it->second.setStatus(DIE);
+                                        _updateAgNum();
+
+                                        /*mapping behavior*/
+                                        it->second.mapStatusToBehavior();
+
+                                        wa.setSentence(env->getSentence(),env->getSentenceID());
+                                        vector<int> father = env->getFather();
+                                        wa.setFather(father);
+                                        wa.setAgReceptor(ag);
+					wa.setAffinity(affinity);
+                                        break;
+                                }
+
+                                it++;
+                        }
                         else
                         {
                                 it++;
@@ -123,10 +148,11 @@ bool Simulator::interact(WordAgent & wa)
         }
         else if(cate == ANTIGEN)
         {
-                /*interact with Bcell agents*/
+
                 map<int,WordAgent>::iterator it =  vWordAgents[posi].begin();
                 while(it != vWordAgents[posi].end())
                 {
+                        /*interact with Bcell agents*/
                         if((it->second.getCategory() == BCELL)&& (it->second.getStatus()== ACTIVE))
                         {
                                 int matchSize = 0;
@@ -147,6 +173,25 @@ bool Simulator::interact(WordAgent & wa)
 					it->second.setFather(father);
                                         it->second.setAgReceptor(ag);
 					it->second.setAffinity(affinity);
+                                        break;
+                                }
+
+                                it++;
+                        }
+                        else if((it->second.getCategory() == ANTIBODY)&& (it->second.getStatus()== ACTIVE))
+                        {
+                                vector<int> r1 = wa.getAgReceptor();
+                                vector<int> r2 = it->second.getRecReceptor();
+
+                                if(wa.isSame(r1,r2))
+                                {
+                                        /*set status*/
+                                        wa.setStatus(DIE);
+                                        it->second.setStatus(DIE);
+                                        /*mapping behavior*/
+                                        it->second.mapStatusToBehavior();
+                                        _updateAgNum();
+
                                         break;
                                 }
 
@@ -193,6 +238,87 @@ bool Simulator::interact(WordAgent & wa)
                 }
 
 
+                wa.mapStatusToBehavior();
+        }
+        else if(cate == ANTIBODY)
+        {
+                /*interact with Antigen or B cell agents*/
+                map<int,WordAgent>::iterator it = vWordAgents[posi].begin();
+                while(it != vWordAgents[posi].end())
+                {
+                        if((it->second.getCategory()== ANTIGEN) && (it->second.getStatus() == ACTIVE))
+                        {
+                                vector<int> r1 = wa.getAgReceptor();
+                                vector<int> r2 = it->second.getRecReceptor();
+
+                                if(wa.isSame(r1,r2))
+                                {
+                                        /*set status*/
+                                        it->second.setStatus(DIE);
+                                        _updateAgNum();
+
+                                        /*mapping behavior*/
+					wa.setStatus(DIE);
+                                        it->second.mapStatusToBehavior();
+
+                                        break;
+                                }
+
+                                it++;
+                        }
+                        else if((it->second.getCategory()== BCELL) && (it->second.getStatus() == ACTIVE))
+                        {
+                                int matchSize = 0;
+                                map<int,double> b = it->second.getDomReceptor();
+                                double affinity = wa.calAffinity(b,matchSize);
+                                vector<int> ag = wa.getRecReceptor();
+                                if((matchSize > 0) && (matchSize == (int)ag.size()))
+                                {
+                                        /*set status*/
+                                        wa.setStatus(DIE);
+                                        it->second.setStatus(MATCH);
+                                        /*mapping behavior*/
+                                        it->second.mapStatusToBehavior();
+
+                                        it->second.setSentence(env->getSentence(),env->getSentenceID());
+					vector<int> father = env->getFather();
+					it->second.setFather(father);
+                                        it->second.setAgReceptor(ag);
+					it->second.setAffinity(affinity);
+                                        break;
+                                }
+
+                                it++;
+                        }
+                        else
+                        {
+                                it++;
+                        }
+                }
+
+
+                wa.mapStatusToBehavior();
+        }
+        else if(cate == PLASMACELL)
+        {
+                /*secret antibody*/
+                int id = wa.getID();
+                int agentID = wa.getAgentID();
+                pair<int,int> position = wa.getPosition();
+                WordAgent ab(id,env,this,position,ANTIBODY,1);
+                ab.setAgentID(agentID);
+                vector<int> rec = wa.getRecReceptor();
+                ab.setRecReceptor(rec);
+                ab.setStatus(ACTIVE);
+                ab.mapStatusToBehavior();
+
+                int numOfAntibody = 10;
+                for(int i = 0; i < numOfAntibody; i++)
+                {
+                        addWordAgent(ab);
+                }
+
+                wa.setStatus(DIE);
                 wa.mapStatusToBehavior();
         }
 

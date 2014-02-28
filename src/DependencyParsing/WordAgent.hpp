@@ -99,7 +99,7 @@ public:
 	bool setRecReceptor(std::vector<int> & rec);
 	bool setAgReceptor(std::vector<int> & rec);
 
-        std::vector<int>        getRecReceptor() const;
+        std::vector<int>        getRecReceptor();
         std::vector<int>        getAgReceptor();
         std::map<int, double>   getDomReceptor();
 	std::map<int, double>   getTmpReceptor();

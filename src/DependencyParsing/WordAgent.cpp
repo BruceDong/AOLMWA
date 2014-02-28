@@ -365,14 +365,25 @@ bool WordAgent::_clone()
 
 		if(N > 0)
 		{
-			WordAgent wa(ID,env,simu,position,MEMORYBCELL,1);
-			wa.setAgentID(AgentID);
-			wa.setAgReceptor(agFeature);
-			wa.setAffinity(mutatedAffinity);
-			wa.mapStatusToBehavior();
+			WordAgent mbc(ID,env,simu,position,MEMORYBCELL,1);
+			mbc.setAgentID(AgentID);
+			mbc.setDomReceptor(domFeature);
+			mbc.setAgReceptor(agFeature);
+			mbc.setAffinity(mutatedAffinity);
+			mbc.mapStatusToBehavior();
+
                         for(int i = 0; i < N; i++)
 			{
-			        simu->addWordAgent(*this);
+			        simu->addWordAgent(mbc);
+			}
+			WordAgent pc(ID,env,simu,position,PLASMACELL,1);
+			pc.setAgentID(AgentID);
+			pc.setAgReceptor(agFeature);
+			pc.setAffinity(mutatedAffinity);
+			pc.mapStatusToBehavior();
+                        for(int i = 0; i < N; i++)
+			{
+			        simu->addWordAgent(pc);
 			}
 		}
 		else
@@ -429,7 +440,7 @@ bool WordAgent::_regulate()
 	return true;
 }
 
-std::vector<int> WordAgent::getRecReceptor() const
+std::vector<int> WordAgent::getRecReceptor()
 {
 	return recFeature;
 }

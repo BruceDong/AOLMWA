@@ -37,6 +37,8 @@
 #define ANTIGEN		0	/*antigen word-agent*/
 #define BCELL		1	/*B cell word-agent*/
 #define MEMORYBCELL     2       /*memory B cell word-agents*/
+#define PLASMACELL      3       /*plasma cell word-agent*/
+#define ANTIBODY	4	/*antibody word-agent*/
 /*Category*/
 
 /************************************** Word Agent**************************************/
