@@ -20,7 +20,6 @@ private:
 	const Sentence * pSen;
 	int p, c;
 	std::map<int,std::vector<std::string> > mSF;
-	//std::vector<std::vector<std::string> > mSF;
 
 public:
 

@@ -20,6 +20,7 @@ private:
 	int status;
 	int AgentID;
 	int category;
+	int mutateTimes;
 	int concentration;
 
 	bool isMem;
@@ -31,8 +32,6 @@ private:
 	double domAffinity;
 	double recAffinity;
 	double mutatedAffinity;
-
-	std::vector<int> localInteractFlag;
 
 	std::queue<int> orders;
 
@@ -48,6 +47,8 @@ private:
 	std::vector<int> mutatePosition;
 	std::vector<int> memoryFeature;
 	std::vector<int> antibodyFeature;
+        std::vector<int> localInteractFlag;
+        std::vector<int> vsentenceID;
 
 	Sentence sen;
 	Simulator * simu;
@@ -130,7 +131,9 @@ public:
 	/*calculating affinity*/
 	std::vector<int> getMutatePosition();
 	double calAffinity(const std::vector<int> & agReceptor, int &matchSize);
+	double calAffinity(const std::vector<int> & agReceptor);
 	double calAffinity(std::map<int,double> & bReceptor, int &matchSize);
+	double calAffinity(std::map<int,double> & bReceptor);
         double calAffinity(const std::vector<int> & receptor,
 	                  std::map<int,double> & domF,int & matchSize);
 
@@ -142,9 +145,12 @@ public:
 	bool isMemory();
 	void setMemory(bool f);
 	bool resetLocalAgents();
+	void getMutateTimes(int times);
 	bool setLocalAgents(int agentID);
 	bool haveInteracted(int agentID);
 	bool insertLocalAgents(int agentID);
+
+	bool isInSentence(int senID);
 
 private:
         /*Behaviors*/

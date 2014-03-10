@@ -19,10 +19,12 @@ private:
 	int agNum;
 	int agentId;
 	int rows, cols;
+	int learnTimes;
 
 	std::vector<double> tmpFW;
 	std::vector<double> historyAccuracy;
 	std::vector<std::map<int,WordAgent> > vWordAgents;
+	std::vector<std::vector<std::map<int,WordAgent> > > globalWordAgent;
 
 	Environment * env;
 public:
@@ -32,6 +34,7 @@ public:
 
 	void init();
 	int getAgNum();
+	void getLearnTime(int times);
 
 	bool resetAgents();
 	bool select(WordAgent & wa);
@@ -52,6 +55,12 @@ public:
 
 	int agentCount(std::pair<int,int> & position);
         void setAgNum(int num);
+
+        void storeLocalWordAgent(int learnTimes, int parts);
+        void getLocalWordAgent(int parts);
+        void resetWordAgents(int parts);
+
+        int getRegions();
 
 private:
         int _getAgNum();

@@ -126,14 +126,63 @@ bool Model::getAllFeatures(const Sentence & sen, std::vector<std::vector<std::st
     return true;
 }
 
-int Model::initFeatureWeight()
+int Model::initFeatureWeight(int learnTimes, int parts)
 {
-	fWeight.resize((int)fMap.size());
-	for(size_t i = 0; i < fWeight.size(); i++)
-	{
-	        fWeight[i] = 0.0;
+        fWeight.resize((int)fMap.size());
+        if(learnTimes == 0)
+        {
+                for(size_t i = 0; i < fWeight.size(); i++)
+                {
+                        fWeight[i] = 0.0;
+                }
         }
-	return (int)fWeight.size();
+        else
+        {
+                for(size_t i = 0; i < globalWeight[parts].size(); i++)
+                {
+                        fWeight[i] = globalWeight[parts][i];
+                }
+        }
+        return (int)fWeight.size();
+}
+
+bool Model::savingFeatureWeights(int learnTimes, int parts)
+{
+        if(fWeight.size() == 0)
+        return false;
+
+        if(learnTimes == 0)
+        {
+                globalWeight.push_back(fWeight);
+        }
+        else
+        {
+                globalWeight[parts] = fWeight;
+        }
+
+        return true;
+}
+
+std::vector<double> Model::mergeFeatureWeight()
+{
+        gWeight.resize(fWeight.size());
+        for(size_t i = 0; i < gWeight.size(); i++)
+        {
+                for(size_t p = 0; p < globalWeight.size(); p++)
+                {
+                        gWeight[i] += (globalWeight[p][i] - gWeight[i]);
+                }
+        }
+
+        for(size_t p = 0; p < globalWeight.size(); p++)
+        {
+                for(size_t i = 0; i < globalWeight[p].size(); i++)
+                {
+                        globalWeight[p][i] = gWeight[i];
+                }
+        }
+
+        return gWeight;
 }
 
 vector<double> Model::getFeatureWeight()

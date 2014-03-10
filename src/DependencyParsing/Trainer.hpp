@@ -32,10 +32,11 @@ public:
 	Trainer(Model * pm, Evaluation * eva);
 	~Trainer();
 
-	bool rfTrain(const Sentence & sen, const int senID,const std::vector<int> & fa);
+	bool rfTrain(const Sentence & sen, const int senID,const std::vector<int> & fa, int iter);
 
 	bool constructBcellNet();
-	bool addBCells(const Sentence & sen, const std::vector<int> & fa);
+	bool constructBcellNet(int p, int learntimes);
+	bool addBCells(int senID, const Sentence & sen, const std::vector<int> & fa);
 
         bool cloneBCells();
         bool cloneAntigens();
@@ -48,6 +49,8 @@ public:
 
         void initSentences();
         bool initSentenceID();
+
+        void storeWordAgent(int learnTimes, int parts);
 
 private:
 	int _buildBCell(const std::string & word);

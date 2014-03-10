@@ -35,6 +35,8 @@ WordAgent::WordAgent(int id, Environment * environment,Simulator * simulator,
 	AgentID = 0;
 	simu = simulator;
 
+	mutateTimes = 0;
+
 	mapStatusToBehavior();
 }
 
@@ -179,8 +181,8 @@ bool WordAgent::_mutate()
 		if((int)mutatePosition.size() > 0)
 		{
 		        double sum = 0.0;
-			int r = rand()%100;
-			double deta = (double)r/1e7;
+			int r = rand()%10000;
+			double deta = (double)(r*mutateTimes)/1e7;
 
 			if(agAffinity == 0.0)
 			{
@@ -732,6 +734,7 @@ bool WordAgent::setSentence(const Sentence & sentence, int sentenceID)
         sen.clear();
         sen = sentence;
         senID = sentenceID;
+        vsentenceID.push_back(sentenceID);
         return true;
 }
 
@@ -830,6 +833,24 @@ double WordAgent::calAffinity(const std::vector<int> & agRec, int &matchSize)
         }
 	return sum;
 }
+
+double WordAgent::calAffinity(const std::vector<int> & agRec)
+{
+        double sum = 0.0;
+
+        std::map<int, double>::iterator it;
+        for(size_t i = 0; i < agRec.size(); i++)
+        {
+                it = domFeature.find(agRec[i]);
+                if(it != domFeature.end())
+                {
+                        sum += 1.0;
+                }
+        }
+
+        return sum/(double)agRec.size();
+}
+
 double WordAgent::calAffinity( std::map<int,double> & bRec, int & matchSize)
 {
       /*calculating affinity*/
@@ -846,6 +867,22 @@ double WordAgent::calAffinity( std::map<int,double> & bRec, int & matchSize)
                 }
         }
 	return sum;
+}
+
+double WordAgent::calAffinity( std::map<int,double> & bRec)
+{
+      /*calculating affinity*/
+	double sum = 0.0;
+        std::map<int, double>::iterator it;
+        for(size_t i = 0; i < recFeature.size(); i++)
+        {
+                it = bRec.find(recFeature[i]);
+                if(it != bRec.end())
+                {
+                        sum += 1.0;
+                }
+        }
+	return sum/(double)recFeature.size();
 }
 
 void    WordAgent::mapStatusToBehavior()
@@ -996,4 +1033,23 @@ bool WordAgent::isMemory()
 void WordAgent::setMemory(bool f)
 {
 	isMem = f;
+}
+
+void WordAgent::getMutateTimes(int times)
+{
+        mutateTimes = times;
+}
+
+bool WordAgent::isInSentence(int senID)
+{
+        for(size_t i = 0; i < vsentenceID.size(); i++)
+        {
+                if(vsentenceID[i] == senID)
+                {
+                        return true;
+                }
+        }
+
+        return false;
+
 }

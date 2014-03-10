@@ -57,11 +57,22 @@ bool Simulator::addWordAgent(WordAgent & pWordAgent)
                 }
                 agentId++;
                 pWordAgent.setAgentID(agentId);
+                int a;
+                if(_calcSub(pWordAgent.getPosition()) > (int)vWordAgents.size())
+                {
+                        cout<<_calcSub(pWordAgent.getPosition())<<" "<<(int)vWordAgents.size()<<endl;
+                        cin>>a;
+                }
                 vWordAgents[_calcSub(pWordAgent.getPosition())].insert(map<int,WordAgent>::value_type(agentId,pWordAgent));
         }
         else
         {
 		agentId++;
+		/*if(_calcSub(pWordAgent.getPosition()) > (int)vWordAgents.size())
+                {
+                        cout<<_calcSub(pWordAgent.getPosition())<<" "<<(int)vWordAgents.size()<<endl;
+                }
+                */
 
                bool f = vWordAgents[_calcSub(pWordAgent.getPosition())].insert(map<int,WordAgent>::value_type(agentId,pWordAgent)).second;
 
@@ -90,10 +101,9 @@ bool Simulator::interact(WordAgent & wa)
                 {
                         if((it->second.getCategory()== ANTIGEN) && (it->second.getStatus() == ACTIVE))
                         {
-                                int matchSize = 0;
                                 vector<int> ag = it->second.getRecReceptor();
-                                double affinity = wa.calAffinity(ag,matchSize);
-                                if((matchSize > 0) && (matchSize == (int)ag.size()))
+                                double affinity = wa.calAffinity(ag);
+                                if(affinity > MATCHTHRESHOLD)
                                 {
                                         /*set status*/
                                         wa.setStatus(MATCH);
@@ -115,10 +125,9 @@ bool Simulator::interact(WordAgent & wa)
                         }
                         else if((it->second.getCategory()==ANTIBODY) && (it->second.getStatus() == ACTIVE))
                         {
-                                int matchSize = 0;
                                 vector<int> ag = it->second.getRecReceptor();
-                                double affinity = wa.calAffinity(ag,matchSize);
-                                if((matchSize > 0) && (matchSize == (int)ag.size()))
+                                double affinity = wa.calAffinity(ag);
+                                if(affinity > MATCHTHRESHOLD)
                                 {
                                         /*set status*/
                                         wa.setStatus(MATCH);
@@ -155,11 +164,10 @@ bool Simulator::interact(WordAgent & wa)
                         /*interact with Bcell agents*/
                         if((it->second.getCategory() == BCELL)&& (it->second.getStatus()== ACTIVE))
                         {
-                                int matchSize = 0;
                                 map<int,double> b = it->second.getDomReceptor();
-                                double affinity = wa.calAffinity(b,matchSize);
+                                double affinity = wa.calAffinity(b);
                                 vector<int> ag = wa.getRecReceptor();
-                                if((matchSize > 0) && (matchSize == (int)ag.size()))
+                                if(affinity > MATCHTHRESHOLD)
                                 {
                                         /*set status*/
                                         wa.setStatus(DIE);
@@ -180,10 +188,10 @@ bool Simulator::interact(WordAgent & wa)
                         }
                         else if((it->second.getCategory() == ANTIBODY)&& (it->second.getStatus()== ACTIVE))
                         {
-                                vector<int> r1 = wa.getAgReceptor();
-                                vector<int> r2 = it->second.getRecReceptor();
+                                vector<int> b = it->second.getRecReceptor();
+                                double affinity = wa.calAffinity(b);
 
-                                if(wa.isSame(r1,r2))
+                                if(affinity > MATCHTHRESHOLD)
                                 {
                                         /*set status*/
                                         wa.setStatus(DIE);
@@ -213,10 +221,10 @@ bool Simulator::interact(WordAgent & wa)
                 {
                         if((it->second.getCategory()== ANTIGEN) && (it->second.getStatus() == ACTIVE))
                         {
-                                vector<int> r1 = wa.getAgReceptor();
-                                vector<int> r2 = it->second.getRecReceptor();
+                                vector<int> b = it->second.getRecReceptor();
+                                double affinity = wa.calAffinity(b);
 
-                                if(wa.isSame(r1,r2))
+                                if(affinity > MATCHTHRESHOLD)
                                 {
                                         /*set status*/
                                         it->second.setStatus(DIE);
@@ -225,6 +233,15 @@ bool Simulator::interact(WordAgent & wa)
                                         /*mapping behavior*/
 					wa.setStatus(DIE);
                                         it->second.mapStatusToBehavior();
+                                        WordAgent mbc(wa.getID(),env,this,wa.getPosition(),MEMORYBCELL,1);
+                                        mbc.setAgentID(wa.getAgentID());
+                                        map<int,double> dom = wa.getDomReceptor();
+                                        mbc.setDomReceptor(dom);
+                                        vector<int> rec = wa.getAgReceptor();
+                                        mbc.setAgReceptor(rec);
+                                        mbc.setAffinity(wa.getAgAffinity());
+                                        mbc.mapStatusToBehavior();
+                                        addWordAgent(mbc);
 
                                         break;
                                 }
@@ -248,10 +265,10 @@ bool Simulator::interact(WordAgent & wa)
                 {
                         if((it->second.getCategory()== ANTIGEN) && (it->second.getStatus() == ACTIVE))
                         {
-                                vector<int> r1 = wa.getAgReceptor();
-                                vector<int> r2 = it->second.getRecReceptor();
+                                vector<int> b = it->second.getRecReceptor();
+                                double affinity = wa.calAffinity(b);
 
-                                if(wa.isSame(r1,r2))
+                                if(affinity > MATCHTHRESHOLD)
                                 {
                                         /*set status*/
                                         it->second.setStatus(DIE);
@@ -268,12 +285,12 @@ bool Simulator::interact(WordAgent & wa)
                         }
                         else if((it->second.getCategory()== BCELL) && (it->second.getStatus() == ACTIVE))
                         {
-                                int matchSize = 0;
                                 map<int,double> b = it->second.getDomReceptor();
-                                double affinity = wa.calAffinity(b,matchSize);
+                                double affinity = wa.calAffinity(b);
                                 vector<int> ag = wa.getRecReceptor();
-                                if((matchSize > 0) && (matchSize == (int)ag.size()))
+                                if(affinity > MATCHTHRESHOLD)
                                 {
+
                                         /*set status*/
                                         wa.setStatus(DIE);
                                         it->second.setStatus(MATCH);
@@ -429,6 +446,9 @@ bool Simulator::run(const Sentence & sen, const std::vector<int> & fa)
 	std::pair<Sentence, vector<int> > p;
         p.first = sen;
         p.second = fa;
+        int round = 1;
+        int mutateTime = learnTimes*round;
+
 	while(hasRun){
 	        hasRun = false;
 
@@ -436,6 +456,7 @@ bool Simulator::run(const Sentence & sen, const std::vector<int> & fa)
                 {
 			for(map<int,WordAgent>::iterator it = vWordAgents[i].begin(); it != vWordAgents[i].end(); it++)
 			{
+			        it->second.getMutateTimes(mutateTime);
                                 it->second.run();
                                 if(_getAgNum() == 0)
                                 {
@@ -467,6 +488,8 @@ bool Simulator::run(const Sentence & sen, const std::vector<int> & fa)
                 {
                         break;
                 }
+                round++;
+                mutateTime = learnTimes*round;
 	}
 
 
@@ -623,4 +646,52 @@ int Simulator::agentCount(std::pair<int,int> & position)
 {
         int posi = _calcSub(position);
         return vWordAgents[posi].size();
+}
+
+void Simulator::getLearnTime(int times)
+{
+        learnTimes = times;
+}
+
+void Simulator::storeLocalWordAgent(int learnTimes, int parts)
+{
+        if(learnTimes == 0)
+        {
+                globalWordAgent.push_back(vWordAgents);
+        }
+        else
+        {
+                globalWordAgent[parts].clear();
+                globalWordAgent[parts] = vWordAgents;
+        }
+        for(size_t i = 0; i < vWordAgents.size(); i++)
+        {
+                vWordAgents[i].clear();
+        }
+
+}
+
+void Simulator::resetWordAgents(int parts)
+{
+        for(size_t i = 0; i < vWordAgents.size(); i++)
+        {
+                vWordAgents[i].clear();
+                vWordAgents[i] = globalWordAgent[parts][i];
+        }
+
+}
+void Simulator::getLocalWordAgent(int parts)
+{
+        int a;
+
+        vWordAgents.clear();
+        cin>>a;
+        vWordAgents = globalWordAgent[parts];
+        cin>>a;
+
+}
+
+int Simulator::getRegions()
+{
+   return vWordAgents.size();
 }

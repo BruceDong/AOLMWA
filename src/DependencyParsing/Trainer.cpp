@@ -24,20 +24,17 @@ Trainer::~Trainer()
 	delete simu;
 }
 
-bool Trainer::rfTrain(const Sentence & sen, const int senID,const vector<int> & fa)
+bool Trainer::rfTrain(const Sentence & sen, const int senID,const vector<int> & fa, int iter)
 {
         pEnv->setSentence(sen);
         pEnv->setSentenceID(senID);
         pEnv->setFather(fa);
-        std::pair<Sentence, vector<int> > p;
-        p.first = sen;
-        p.second = fa;
-        vSen.push_back(p);
 
         _injectAntigen(sen, fa);
 
-        cout<<"(s, "<<vSen.size()<<")";
+        cout<<"(s, "<<senID<<")";
 
+        simu->getLearnTime(iter);
 	if(simu->run(sen,fa))
         {
 		vector<double> fw = pModel->getFeatureWeight();
@@ -49,7 +46,7 @@ bool Trainer::rfTrain(const Sentence & sen, const int senID,const vector<int> & 
 	return false;
 }
 
-bool Trainer::addBCells(const Sentence & sen, const vector<int> & fa)
+bool Trainer::addBCells(int senID, const Sentence & sen, const vector<int> & fa)
 {
 	vector<int> features;
 	for(size_t i = 1; i < sen.size(); i++){
@@ -58,7 +55,9 @@ bool Trainer::addBCells(const Sentence & sen, const vector<int> & fa)
 		int bj = _buildBCell(sen[j].first);
 		pModel->getFeatureIDVec(sen, j, i, features);
 		BCells[bi].addRecFeature(features);
+		BCells[bi].setSentence(sen,senID);
 		BCells[bj].addDomFeature(features);
+		BCells[bj].setSentence(sen,senID);
 	}
 	return true;
 }
@@ -78,17 +77,35 @@ int Trainer::_buildBCell(const string & word)
 	return res;
 }
 
-bool Trainer::constructBcellNet()
+
+
+bool Trainer::constructBcellNet(int p, int learntimes)
 {
-        cout<<"Constructing B cell network..."<<endl;
-        cout<<"Number of B cells is "<<BCells.size()*2<<endl;
+        if(learntimes != 0)
+        {
+                simu->resetWordAgents(p);
+                return true;
+        }
+        int begin = p*PART;
+        int end   = (1 + p)*PART;
+
+        cout<<"Constructing the "<<1 + p<<" region B cell network..."<<endl;
+        int sizeofBcell = 0;
 
 	for(size_t i = 0; i < BCells.size(); i++)
 	{
-		simu->addWordAgent(BCells[i]);
+	        for(int j = begin; j < end; j++)
+	        {
+	                int wordSenId = j + 1;
+
+	                if(BCells[i].isInSentence(wordSenId))
+	                {
+                                simu->addWordAgent(BCells[i]);
+                                sizeofBcell++;
+	                }
+	        }
 	}
 
-	BCells.clear();
 	cout<<"Construct finished!"<<endl;
 	return true;
 }
@@ -224,6 +241,11 @@ bool Trainer::initSentenceID()
 void Trainer::testSub()
 {
         pEnv->testSub(20);
+}
+
+void Trainer::storeWordAgent(int lt, int p)
+{
+        simu->storeLocalWordAgent(lt,p);
 }
 
 bool Trainer::saveFeatureWeights()

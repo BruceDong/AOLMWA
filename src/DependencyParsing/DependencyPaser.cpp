@@ -58,7 +58,7 @@ bool DependencyPaser::_readFileAddBCell(const char * file)
 				father.push_back(atoi(senes[i][6].c_str()));
 			}
 
-			pTrainer->addBCells(sen, father);
+			pTrainer->addBCells(senID, sen, father);
 			cout<<"."<<senID<<" ";
 			senes.clear();
 			senID++;
@@ -81,13 +81,9 @@ bool DependencyPaser::_readFileAddBCell(const char * file)
 
 bool DependencyPaser::_readFileTrain(const char * trainFile,const char * testFile, const char * outFile, const char * evaluateFile)
 {
-        pTrainer->constructBcellNet();
 	string line;
 	vector<vector<string> > senes;
-	int size = pModel->initFeatureWeight();
-	pModel->setAccumulateFeatureSize(size);
 	_printEvaluateLine(evaluateFile);
-
 	ifstream fin(trainFile);
 	vector<vector<string> > f;
 	vector<string> t;
@@ -105,58 +101,35 @@ bool DependencyPaser::_readFileTrain(const char * trainFile,const char * testFil
 
         }
         fin.close();
+        pTrainer->initSentences();
+
 
 	for(size_t i = 0; i < LEARNTIMES; i++)
 	{
 	        cout<<"Learning "<<i+1<<" times"<<endl;
-	        pTrainer->initSentences();
+
 	        int senNum = 1;
-	        oldfw = pModel->getFeatureWeight();
-		cout<<"size of feature weights is "<<oldfw.size()<<endl;
-		if(i%2 == 0)
-		{
-		     for(size_t j = 0; j < f.size(); j++)
-		     {
-		             for(size_t m = 0 ; m < f[j].size(); m++)
-		             {
-		                     vector<string> item;
-                                     string tmp;
-                                        istringstream sin(f[j][m]);
-                                        while(sin >> tmp){
-                                                item.push_back(tmp);
-                                        }
-                                        senes.push_back(item);
-                             }
-
-                                vector<int> father;
-                                Sentence sen;
-                                sen.push_back(make_pair("ROOT", "ORG"));
-                                father.push_back(-1);
-                                for(size_t i = 0; i < senes.size(); i++){
-                                        sen.push_back(make_pair(senes[i][1], senes[i][3]));
-                                        father.push_back(atoi(senes[i][6].c_str()));
-                                }
-                                pTrainer->rfTrain(sen, senNum, father);
-                                senNum++;
-                                senes.clear();
-
-
-                        }
-                }
-               else
+		int times = i + 1;
+		int parts = (int)f.size()/PART;
+                for(int p = 0; p < parts; p++)
                 {
-                     for(int j = (int)f.size() - 1; j > -1; j--)
-		     {
-                             for(size_t m = 0 ; m < f[j].size(); m++)
-		             {
-		                     vector<string> item;
-                                     string tmp;
+                        int size = pModel->initFeatureWeight(i,p);
+                        oldfw = pModel->getFeatureWeight();
+                        pModel->setAccumulateFeatureSize(size);
+                        pTrainer->constructBcellNet(p, i);
+
+                        for(int j = p*PART; j < ((1+p)*PART); j++)
+                        {
+                                for(size_t m = 0 ; m < f[j].size(); m++)
+                                {
+                                        vector<string> item;
+                                        string tmp;
                                         istringstream sin(f[j][m]);
                                         while(sin >> tmp){
                                                 item.push_back(tmp);
                                         }
                                         senes.push_back(item);
-                             }
+                                }
 
                                 vector<int> father;
                                 Sentence sen;
@@ -166,150 +139,21 @@ bool DependencyPaser::_readFileTrain(const char * trainFile,const char * testFil
                                         sen.push_back(make_pair(senes[i][1], senes[i][3]));
                                         father.push_back(atoi(senes[i][6].c_str()));
                                 }
-                                pTrainer->rfTrain(sen, senNum, father);
+                                pTrainer->rfTrain(sen, senNum, father, times);
                                 senNum++;
                                 senes.clear();
                         }
 
+                        /*store word agents*/
+                        pTrainer->storeWordAgent(i,p);
+                        /*reset feature weight*/
+                        pModel->savingFeatureWeights(i,p);
                 }
 
                 predictFile(testFile,outFile,i+1,senNum);
 	}
 
         return true;
-}
-
-bool DependencyPaser::_readFileTrain(const char * file)
-{
-	pTrainer->constructBcellNet();
-	string line;
-	vector<vector<string> > senes;
-	pModel->initFeatureWeight();
-	for(size_t i = 0; i < LEARNTIMES; i++)
-	{
-	        cout<<"Learning "<<i+1<<" times"<<endl;
-	        ifstream fin(file);
-	        pTrainer->initSentences();
-	        int senID = 1;
-                while(getline(fin, line)){
-                        if(line == ""){
-                                vector<int> father;
-                                Sentence sen;
-                                sen.push_back(make_pair("ROOT", "ORG"));
-                                father.push_back(-1);
-                                for(size_t i = 0; i < senes.size(); i++){
-                                        sen.push_back(make_pair(senes[i][1], senes[i][3]));
-                                        father.push_back(atoi(senes[i][6].c_str()));
-                                }
-
-
-                                pTrainer->rfTrain(sen, senID, father);
-                                senes.clear();
-                        }
-                        else{
-                                vector<string> item;
-                                string tmp;
-                                istringstream sin(line);
-                                while(sin >> tmp){
-                                        item.push_back(tmp);
-                                }
-                                senes.push_back(item);
-                        }
-                }
-                fin.close();
-                pTrainer->initSentenceID();
-
-	}
-
-
-
-
-	return true;
-}
-bool DependencyPaser::trainFile(const char * file)
-{
-        cout<<"Initilizing B cell Network...";
-	_readFileAddBCell(file);
-	cout<<"Initilizing finished!"<<endl;
-
-	cout<<"Online learning...";
-	_readFileTrain(file);
-	cout<<"Online learning finished!"<<endl;
-
-	return true;
-}
-
-bool DependencyPaser::predictFile(const char * testFile, const char * outFile)
-{
-        cout<<"Predicting...";
-
-	ifstream fin(testFile);
-	ofstream fout(outFile, ios::out|ios::app);
-	string line;
-	vector<vector<string> > senes;
-	newfw = pModel->getFeatureWeight();
-	file.open("./result/newfw",ios::out|ios::app);
-	for(size_t i = 0;i < newfw.size(); i++)
-	{
-	        if(newfw[i] != oldfw[i])
-	        {
-	                file<<i<<":"<<oldfw[i]<<","<<newfw[i]<<" ";
-                }
-        }
-        file<<endl;
-        file.close();
-
-	int senNum = 0;
-	double sum  = 0.0;
-	double total = 0.0;
-	double sum1= 0.0;
-	while(getline(fin, line)){
-		if(line == ""){
-			vector<int> father;
-			Sentence sen;
-			sen.push_back(make_pair("ROOT", "ORG"));
-			for(size_t i = 0; i < senes.size(); i++){
-				sen.push_back(make_pair(senes[i][1], senes[i][3]));
-			}
-
-			father.resize(sen.size());
-			predict(sen,father);
-			int a = 0;
-			for(size_t i = 0; i < senes.size(); i++){
-
-				if(father[i+1] == atoi(senes[i][6].c_str()))
-				{
-				        a++;
-                                }
-
-			}
-
-			double acc = (double)a/(double)senes.size();
-			sum += acc;
-			senNum++;
-			sum1 += a;
-			total += double(senes.size() - 1.0);
-			senes.clear();
-
-		}
-		else{
-			vector<string> item;
-			string tmp;
-			istringstream sin(line);
-			while(sin >> tmp){
-				item.push_back(tmp);
-			}
-			senes.push_back(item);
-		}
-	}
-	double average = sum /(double)senNum;
-	double acct = sum1/total;
-	cout<<"Accuracy is "<<average<<endl;
-	cout<<"acc is "<<acct<<endl;
-	fout<<"Accuracy is "<<average<<endl;
-	fout.close();
-	cout<<endl<<"Predicting finished!"<<endl;
-	return true;
 }
 
 bool DependencyPaser::predictFile(const char * testFile, const char * outFile, int Iter, int Num)
@@ -320,7 +164,7 @@ bool DependencyPaser::predictFile(const char * testFile, const char * outFile, i
 	ofstream fout(outFile, ios::out|ios::app);
 	string line;
 	vector<vector<string> > senes;
-	oldfw = pModel->getFeatureWeight();
+	oldfw = pModel->mergeFeatureWeight();
 	vfw.push_back(oldfw);
 	newfw.resize(oldfw.size());
 	double N = double(Iter)*(double)Num;
@@ -383,10 +227,9 @@ bool DependencyPaser::predictFile(const char * testFile, const char * outFile, i
 			senes.push_back(item);
 		}
 	}
-	double average = sum /(double)senNum;
 
 	cout<<"acc is "<<sum1/total<<endl;
-	fout<<Iter<<" is "<<average<<endl;
+	fout<<Iter<<" is "<<sum1/total<<endl;
 	fout.close();
 	cout<<endl<<"Predicting finished!"<<endl;
 	return true;

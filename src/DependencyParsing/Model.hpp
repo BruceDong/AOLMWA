@@ -17,6 +17,8 @@ private:
 	fstream f;
 
 	std::vector<double> fWeight;
+	std::vector<double> gWeight;
+	std::vector< vector<double> > globalWeight;
 	std::vector<double> accFeatureWeight;
 	std::vector<int> sentenceFeature;
 
@@ -39,7 +41,8 @@ public:
 	bool getFeatures(const Sentence & sen, std::vector<std::vector<std::string> > & sens,std::vector<int> & fa);
 	bool getAllFeatures(const Sentence & sen, std::vector<std::vector<std::string> > & sens, int senID);
 
-	int initFeatureWeight();
+	int initFeatureWeight(int learnTimes, int parts);
+	bool savingFeatureWeights(int learnTimes, int parts);
 	bool setFeatureWeight(std::vector<double> & newWeight);
 	bool updateFeatureWeight(std::map<int, double> & newFea);
 	std::vector<double> getFeatureWeight();
@@ -50,6 +53,8 @@ public:
 
 	void resetSentenceFeature();
 	std::vector<int> getSentenceFeature();
+	std::vector<double> mergeFeatureWeight();
+
 
 private:
 	inline int _getFeatureID(const std::string & feat);
