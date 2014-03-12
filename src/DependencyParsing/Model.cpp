@@ -101,7 +101,7 @@ bool Model::getAllFeatures(const Sentence & sen, std::vector<std::vector<std::st
                     int fid = _getFeatureID(fea[i]);;
                     if(fid != -1)
                     {
-                            vector<int>::iterator result = find( vfid.begin( ), vfid.end( ), fid ); //æŸ¥æ‰¾3
+                            vector<int>::iterator result = find( vfid.begin( ), vfid.end( ), fid ); //²éÕÒ3
                             if  ( result == vfid.end( ) )
                             {
                                     vfid.push_back(fid);

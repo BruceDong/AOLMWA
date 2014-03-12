@@ -165,23 +165,7 @@ bool DependencyPaser::predictFile(const char * testFile, const char * outFile, i
 	string line;
 	vector<vector<string> > senes;
 	oldfw = pModel->mergeFeatureWeight();
-	vfw.push_back(oldfw);
-	newfw.resize(oldfw.size());
-	double N = double(Iter)*(double)Num;
-	for(size_t i = 0; i < vfw.size();i++)
-	{
-	        for(size_t j = 0; j < vfw[i].size(); j++)
-	        {
-	                newfw[j] += vfw[i][j];
-                }
-        }
-
-        for(size_t i = 0 ; i < newfw.size(); i++)
-        {
-                newfw[i] = newfw[i]/N;
-        }
-
-        pModel->setFeatureWeight(newfw);
+        pModel->setFeatureWeight(oldfw);
 
 
 	int senNum = 0;
@@ -207,7 +191,6 @@ bool DependencyPaser::predictFile(const char * testFile, const char * outFile, i
                                 }
 
 			}
-			cout<<"corr "<<a<<" "<<"total "<<senes.size()-1.0<<endl;
 
 			double acc = (double)a/(double)(senes.size()-1.0);
 			sum += acc;
