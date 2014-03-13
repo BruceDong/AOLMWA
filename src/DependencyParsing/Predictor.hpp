@@ -8,7 +8,7 @@ class Predictor{
 private:
 	Model * pModel;
 private:
-	static const int maxLen = 128;
+	static const int maxLen = 256;
 public:
         std::vector<int> vFeaID;
 public:

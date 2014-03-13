@@ -163,15 +163,20 @@ bool Model::savingFeatureWeights(int learnTimes, int parts)
         return true;
 }
 
-std::vector<double> Model::mergeFeatureWeight()
+std::vector<double> Model::mergeFeatureWeight(int learnTimes)
 {
-        gWeight.resize(fWeight.size());
+        if(learnTimes == 0)
+        {
+                gWeight.resize(fWeight.size());
+        }
         for(size_t i = 0; i < gWeight.size(); i++)
         {
+		double sum = 0.0;
                 for(size_t p = 0; p < globalWeight.size(); p++)
                 {
-                        gWeight[i] += (globalWeight[p][i] - gWeight[i]);
+                        sum += (globalWeight[p][i] - gWeight[i]);
                 }
+		gWeight[i] += sum;
         }
 
         for(size_t p = 0; p < globalWeight.size(); p++)

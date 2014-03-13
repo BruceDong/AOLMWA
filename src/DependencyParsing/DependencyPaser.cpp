@@ -150,7 +150,7 @@ bool DependencyPaser::_readFileTrain(const char * trainFile,const char * testFil
                         pModel->savingFeatureWeights(i,p);
                 }
 
-                predictFile(testFile,outFile,i+1,senNum);
+                predictFile(testFile,outFile,i,senNum);
 	}
 
         return true;
@@ -164,7 +164,7 @@ bool DependencyPaser::predictFile(const char * testFile, const char * outFile, i
 	ofstream fout(outFile, ios::out|ios::app);
 	string line;
 	vector<vector<string> > senes;
-	oldfw = pModel->mergeFeatureWeight();
+	oldfw = pModel->mergeFeatureWeight(Iter);
         pModel->setFeatureWeight(oldfw);
 
 

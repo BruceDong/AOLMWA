@@ -53,7 +53,7 @@ public:
 
 	void resetSentenceFeature();
 	std::vector<int> getSentenceFeature();
-	std::vector<double> mergeFeatureWeight();
+	std::vector<double> mergeFeatureWeight(int learnTimes);
 
 
 private:

@@ -3,13 +3,13 @@
 
 /************************************** Simulator **************************************/
 
-#define PART                    5              /*parts of corpus*/
+#define PART                    10              /*parts of corpus*/
 #define LEARNTIMES	        200	        /*times of learning*/
 #define MUTATEPRO   	        0.001	        /*Mutated probability*/
 #define PRECISION	        100000000	/*3 points after 0: 0.000*/
 #define MATCHTHRESHOLD          0.9             /*threshold for matching bits*/
 #define ACCURACYTHRESHOLD       0.96            /*threshold for mutated accuracy*/
-#define TIMETHRESHOLD           5              /*time threshold for terminating immune responses to control
+#define TIMETHRESHOLD           20              /*time threshold for terminating immune responses to control
                                                 the training time*/
 
 /************************************** Simulator **************************************/
