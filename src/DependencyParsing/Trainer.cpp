@@ -100,6 +100,7 @@ bool Trainer::constructBcellNet(int p, int learntimes)
 
 	                if(BCells[i].isInSentence(wordSenId))
 	                {
+				cout<<"B cell "<<wordSenId<<" ";
                                 simu->addWordAgent(BCells[i]);
                                 sizeofBcell++;
 	                }
@@ -146,7 +147,9 @@ bool Trainer::_addAntigen()
         {
                 int pos = -1;
                 cout<<"Size of antigens is "<<Antigens.size()<<endl;
-                simu->setAgNum((int)Antigens.size());
+		int size = (int)Antigens.size();
+		cout<<"size is "<<size<<endl;
+                simu->setAgNum(size);
                 for(size_t p = 0; p < Antigens.size(); p++)
                 {
                         pos = p%positions.size();

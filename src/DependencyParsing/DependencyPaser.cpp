@@ -103,7 +103,6 @@ bool DependencyPaser::_readFileTrain(const char * trainFile,const char * testFil
         fin.close();
         pTrainer->initSentences();
 
-
 	for(size_t i = 0; i < LEARNTIMES; i++)
 	{
 	        cout<<"Learning "<<i+1<<" times"<<endl;
@@ -144,6 +143,7 @@ bool DependencyPaser::_readFileTrain(const char * trainFile,const char * testFil
                                 senes.clear();
                         }
 
+
                         /*store word agents*/
                         pTrainer->storeWordAgent(i,p);
                         /*reset feature weight*/
@@ -164,7 +164,7 @@ bool DependencyPaser::predictFile(const char * testFile, const char * outFile, i
 	ofstream fout(outFile, ios::out|ios::app);
 	string line;
 	vector<vector<string> > senes;
-	oldfw = pModel->mergeFeatureWeight(Iter);
+	oldfw = pModel->mergeFeatureWeight(Iter, (double)Num);
         pModel->setFeatureWeight(oldfw);
 
 

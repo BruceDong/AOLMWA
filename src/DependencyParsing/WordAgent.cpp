@@ -181,7 +181,7 @@ bool WordAgent::_mutate()
 		if((int)mutatePosition.size() > 0)
 		{
 		        double sum = 0.0;
-			int r = rand()%10000;
+			int r = rand()%100000;
 			double deta = (double)(r*mutateTimes)/1e7;
 
 			if(agAffinity == 0.0)

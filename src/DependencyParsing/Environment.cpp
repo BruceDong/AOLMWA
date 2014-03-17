@@ -143,11 +143,6 @@ std::vector<std::map<int, WordAgent> > Environment::getAgents()
 	return pWordAgents;
 }
 
-void Environment::gainSentenceInfor(const Sentence & sentence, const std::vector<int> & father)
-{
-	//sen = sentence;
-	//fa  = father;
-}
 
 int Environment::getAntigenNum()
 {

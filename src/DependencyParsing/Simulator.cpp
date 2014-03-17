@@ -51,10 +51,6 @@ bool Simulator::addWordAgent(WordAgent & pWordAgent)
 {
         if(pWordAgent.getAgentID() == 0)
         {
-                if(pWordAgent.getCategory() == ANTIGEN)
-                {
-                        agNum++;
-                }
                 agentId++;
                 pWordAgent.setAgentID(agentId);
                 int a;
@@ -436,8 +432,14 @@ bool Simulator::run(const Sentence & sen, const std::vector<int> & fa)
 	{
 	        size += vWordAgents[i].size();
         }
+	
         cout<<endl<<"size of agents is "<<size<<endl;
+	int a;
 
+	if(agNum == size)
+	{
+		cin>>a;
+	}
 	clock_t start,finish;
         double totaltime;
         start = clock();
@@ -561,6 +563,7 @@ int Simulator::_getAgNum()
 }
 void Simulator::setAgNum(int num)
 {
+	agNum = 0;
         agNum = num;
 }
 

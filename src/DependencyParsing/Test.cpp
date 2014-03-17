@@ -24,6 +24,6 @@ void testParsing()
 {
         DependencyPaser dp;
 
-        dp.parsing("./data/DataSetForDependencyParsing/train-20","./data/DataSetForDependencyParsing/train-20","./result/result-20.conll","./result/evaluate.conll");
+        dp.parsing("./data/DataSetForDependencyParsing/train-1000","./data/DataSetForDependencyParsing/train-1000","./result/result-1000.conll","./result/evaluate.conll");
 
 }
